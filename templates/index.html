@@ -62,19 +62,22 @@ function login() {
 
 // Detect login state
 authInstance.onAuthStateChanged(user => {
-    const loginBtn = document.querySelector('.google-btn');
+    const loginCard = document.querySelector('.card'); // first card is login
     const welcomeContainer = document.getElementById('welcome-container');
 
     if (user) {
-        loginBtn.style.display = 'none';
-        welcomeContainer.innerHTML = `<h3>Hello, ${user.displayName}</h3>`;
+        if (loginCard) loginCard.style.display = 'none'; // hide entire card
+
+        welcomeContainer.innerHTML = `<h3 class="welcome-text">Hello, ${user.displayName}</h3>`;
+
         loadTransactions();
     } else {
-        loginBtn.style.display = 'block';
+        if (loginCard) loginCard.style.display = 'block';
         welcomeContainer.innerHTML = '';
         document.getElementById('history').innerHTML = '';
     }
 });
+
 
 // Add transaction
 async function addTransaction(type) {
