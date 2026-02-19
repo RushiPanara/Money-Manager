@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Expense Tracker</title>
+    <meta charset="UTF-8">
+    <title>💰 Money Manager</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
 
 <div class="container">
-    <h1>💰 Expense Tracker</h1>
+    <h1>💰 Money Manager</h1>
 
-    <!-- Login Card -->
+    <!-- Google Login -->
     <div class="card">
         <button class="btn google-btn" onclick="login()">
             <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" width="18">
@@ -17,7 +18,10 @@
         </button>
     </div>
 
-    <!-- Form Card -->
+    <!-- Welcome message -->
+    <div id="welcome-container"></div>
+
+    <!-- Add Transaction Form -->
     <div class="card" style="margin-top:20px;">
         <div class="form-group">
             <label>Amount</label>
@@ -32,53 +36,119 @@
         <button class="btn" onclick="addTransaction('income')">Add Income</button>
         <button class="btn" onclick="addTransaction('expense')" style="margin-left:10px;">Add Expense</button>
     </div>
+
+    <!-- Transaction history will appear here -->
+    <div id="history" class="card" style="margin-top:20px;"></div>
 </div>
 
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
 <script>
-  const firebaseConfig = {
+const firebaseConfig = {
     apiKey: "AIzaSyDvR3LsenhBEn5Fw_53_cf9VMHRTJosnfo",
     authDomain: "money-manager-f51d2.firebaseapp.com",
     projectId:  "money-manager-f51d2",
-  };
+};
+firebase.initializeApp(firebaseConfig);
+const authInstance = firebase.auth();
 
-  firebase.initializeApp(firebaseConfig);
-  const authInstance = firebase.auth();
-
-  function login() {
+// Handle login
+function login() {
     const provider = new firebase.auth.GoogleAuthProvider();
     authInstance.signInWithPopup(provider);
-  }
+}
 
-  async function addTransaction(type) {
+// Detect login state
+authInstance.onAuthStateChanged(user => {
+    const loginBtn = document.querySelector('.google-btn');
+    const welcomeContainer = document.getElementById('welcome-container');
+
+    if (user) {
+        loginBtn.style.display = 'none';
+        welcomeContainer.innerHTML = `<h3>Hello, ${user.displayName}</h3>`;
+        loadTransactions();
+    } else {
+        loginBtn.style.display = 'block';
+        welcomeContainer.innerHTML = '';
+        document.getElementById('history').innerHTML = '';
+    }
+});
+
+// Add transaction
+async function addTransaction(type) {
     const user = authInstance.currentUser;
     if (!user) {
-      alert("Please login first");
-      return;
+        alert("Please login first");
+        return;
     }
 
     const token = await user.getIdToken();
-
     const amount = document.getElementById("amount").value;
     const category = document.getElementById("category").value;
 
+    if (!amount || !category) {
+        alert("Please enter amount and category");
+        return;
+    }
+
     await fetch("/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        token: token,
-        type: type,
-        amount: parseFloat(amount),
-        category: category
-      })
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            token: token,
+            type: type,
+            amount: parseFloat(amount),
+            category: category
+        })
     });
 
-    alert("Transaction Added!");
-  }
+    // Clear inputs
+    document.getElementById("amount").value = '';
+    document.getElementById("category").value = '';
+
+    // Reload history
+    loadTransactions();
+}
+
+// Load user transactions
+async function loadTransactions() {
+    const user = authInstance.currentUser;
+    if (!user) return;
+
+    const token = await user.getIdToken();
+    const res = await fetch("/transactions", {
+        headers: {"Authorization": `Bearer ${token}`}
+    });
+    const data = await res.json();
+
+    const historyDiv = document.getElementById('history');
+    historyDiv.innerHTML = `
+        <h3>Transaction History</h3>
+        <p><strong>Total Income:</strong> ${data.total_income}</p>
+        <p><strong>Total Expense:</strong> ${data.total_expense}</p>
+        <p><strong>Balance:</strong> ${data.balance}</p>
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${data.transactions.map(t => `<tr>
+                        <td>${t.type}</td>
+                        <td>${t.amount}</td>
+                        <td>${t.category}</td>
+                    </tr>`).join('')}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
 </script>
 
 </body>
