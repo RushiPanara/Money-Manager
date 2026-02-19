@@ -3,32 +3,45 @@
 <head>
     <title>Expense Tracker</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-
 </head>
 <body>
 
-<h2>Expense Tracker</h2>
+<div class="container">
+    <h1>💰 Expense Tracker</h1>
 
-<button onclick="login()">Sign in with Google</button>
+    <!-- Login Card -->
+    <div class="card">
+        <button class="btn google-btn" onclick="login()">
+            <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" width="18">
+            Sign in with Google
+        </button>
+    </div>
 
-<br><br>
+    <!-- Form Card -->
+    <div class="card" style="margin-top:20px;">
+        <div class="form-group">
+            <label>Amount</label>
+            <input type="number" id="amount" placeholder="Enter amount">
+        </div>
 
-<input type="number" id="amount" placeholder="Amount">
-<input type="text" id="category" placeholder="Category">
+        <div class="form-group">
+            <label>Category</label>
+            <input type="text" id="category" placeholder="Enter category">
+        </div>
 
-<br><br>
-
-<button onclick="addTransaction('income')">Add Income</button>
-<button onclick="addTransaction('expense')">Add Expense</button>
+        <button class="btn" onclick="addTransaction('income')">Add Income</button>
+        <button class="btn" onclick="addTransaction('expense')" style="margin-left:10px;">Add Expense</button>
+    </div>
+</div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js"></script>
 
 <script>
   const firebaseConfig = {
-    apiKey: "AIzaSyDvR3LsenhBEn5Fw_53_cf9VMHRTJosnfo",
-    authDomain: "money-manager-f51d2.firebaseapp.com",
-    projectId: "money-manager-f51d2",
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
   };
 
   firebase.initializeApp(firebaseConfig);
