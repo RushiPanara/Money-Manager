@@ -9,7 +9,7 @@
 }
 
 body {
-    background: linear-gradient(135deg, #06041e, #fffbfb06);
+    background: linear-gradient(135deg, #06041e, #050404);
     min-height: 100vh;
     display: flex;
     justify-content: center;
@@ -24,7 +24,7 @@ body {
     backdrop-filter: blur(20px);
     padding: 40px;
     border-radius: 25px;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 25px 50px rgba(32, 31, 31, 0.3);
     color: white;
     text-align: center;
     transition: all 0.3s ease;
@@ -36,7 +36,7 @@ h1 {
     font-weight: 700;
     margin-bottom: 30px;
     color: #fff;
-    text-shadow: 2px 2px 12px rgba(0,0,0,0.5);
+    text-shadow: 2px 2px 12px rgba(32, 31, 31, 0.3);
 }
 
 /* Optional gradient highlight on Money Manager text */
@@ -52,7 +52,7 @@ h1 span {
     font-weight: 600;
     margin-bottom: 25px;
     color: #fff;
-    text-shadow: 1px 1px 6px rgba(0,0,0,0.6);
+    text-shadow: 1px 1px 6px rgba(32, 31, 31, 0.3);
 }
 
 /* Button */
