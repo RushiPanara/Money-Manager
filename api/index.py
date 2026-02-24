@@ -10,11 +10,7 @@ app = Flask(
     static_folder="../static"
 )
 
-# -------------------------
-# Initialize Firebase
-# -------------------------
 if not firebase_admin._apps:
-    # Use environment variable for hosting (FIREBASE_KEY)
     firebase_key_json = os.environ.get("FIREBASE_KEY")
     if not firebase_key_json:
         raise Exception("FIREBASE_KEY environment variable is missing!")
@@ -23,9 +19,6 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
-# -------------------------
-# Routes
-# -------------------------
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -47,9 +40,8 @@ def add_transaction():
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
-    # Validate transaction data
     transaction = {
-        "type": data.get("type"),  # income or expense
+        "type": data.get("type"),  
         "amount": data.get("amount"),
         "category": data.get("category")
     }
@@ -57,7 +49,6 @@ def add_transaction():
     if not transaction["type"] or not transaction["amount"] or not transaction["category"]:
         return jsonify({"error": "Missing transaction fields"}), 400
 
-    # Add transaction to Firestore
     db.collection("users").document(uid).collection("transactions").add(transaction)
 
     return jsonify({"message": "Transaction added successfully"})
@@ -65,7 +56,6 @@ def add_transaction():
 
 @app.route("/transactions", methods=["GET"])
 def get_transactions():
-    # Get token from Authorization header
     auth_header = request.headers.get("Authorization")
     if not auth_header:
         return jsonify({"error": "Unauthorized"}), 401
@@ -77,7 +67,6 @@ def get_transactions():
     except Exception as e:
         return jsonify({"error": str(e)}), 401
 
-    # Fetch user transactions
     transactions_ref = db.collection("users").document(uid).collection("transactions")
     transactions_docs = transactions_ref.stream()
 
@@ -87,7 +76,7 @@ def get_transactions():
 
     for doc in transactions_docs:
         t = doc.to_dict()
-        t["id"] = doc.id  # optional, for delete/edit
+        t["id"] = doc.id  
         transactions.append(t)
         if t["type"] == "income":
             total_income += t["amount"]
@@ -103,28 +92,6 @@ def get_transactions():
         "balance": balance
     })
 
-
-# -------------------------
-# Optional: Delete Transaction
-# -------------------------
-@app.route("/delete/<transaction_id>", methods=["DELETE"])
-def delete_transaction(transaction_id):
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return jsonify({"error": "Unauthorized"}), 401
-
-    try:
-        id_token = auth_header.split("Bearer ")[-1]
-        decoded_token = auth.verify_id_token(id_token)
-        uid = decoded_token["uid"]
-    except Exception as e:
-        return jsonify({"error": str(e)}), 401
-
-    try:
-        db.collection("users").document(uid).collection("transactions").document(transaction_id).delete()
-        return jsonify({"message": "Transaction deleted successfully"})
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
 
 
 

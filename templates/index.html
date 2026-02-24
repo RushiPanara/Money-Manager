@@ -10,7 +10,6 @@
 <div class="container">
     <h1>💰 Money Manager</h1>
 
-    <!-- Google Login -->
     <div class="card">
         <button class="btn google-btn" onclick="login()">
             <img src="https://cdn-icons-png.flaticon.com/512/281/281764.png" width="18">
@@ -18,10 +17,8 @@
         </button>
     </div>
 
-    <!-- Welcome message -->
     <div id="welcome-container"></div>
 
-    <!-- Add Transaction Form -->
     <div class="card" style="margin-top:20px;">
         <div class="form-group">
             <label>Amount</label>
@@ -37,11 +34,9 @@
         <button class="btn" onclick="addTransaction('expense')" style="margin-left:10px;">Add Expense</button>
     </div>
 
-    <!-- Transaction history will appear here -->
     <div id="history" class="card" style="margin-top:20px;"></div>
 </div>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 
@@ -54,19 +49,18 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const authInstance = firebase.auth();
 
-// Handle login
 function login() {
     const provider = new firebase.auth.GoogleAuthProvider();
     authInstance.signInWithPopup(provider);
 }
 
-// Detect login state
+
 authInstance.onAuthStateChanged(user => {
-    const loginCard = document.querySelector('.card'); // first card is login
+    const loginCard = document.querySelector('.card'); 
     const welcomeContainer = document.getElementById('welcome-container');
 
     if (user) {
-        if (loginCard) loginCard.style.display = 'none'; // hide entire card
+        if (loginCard) loginCard.style.display = 'none'; 
 
         welcomeContainer.innerHTML = `<h3 class="welcome-text">Hello, ${user.displayName}</h3>`;
 
@@ -79,7 +73,6 @@ authInstance.onAuthStateChanged(user => {
 });
 
 
-// Add transaction
 async function addTransaction(type) {
     const user = authInstance.currentUser;
     if (!user) {
@@ -107,15 +100,12 @@ async function addTransaction(type) {
         })
     });
 
-    // Clear inputs
     document.getElementById("amount").value = '';
     document.getElementById("category").value = '';
 
-    // Reload history
     loadTransactions();
 }
 
-// Load user transactions
 async function loadTransactions() {
     const user = authInstance.currentUser;
     if (!user) return;
