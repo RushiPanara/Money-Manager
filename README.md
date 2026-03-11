@@ -99,8 +99,3 @@ Money-Manager
 5️⃣ Transactions are stored under **user UID in Firestore**
 
 ---
-
-# 📡 API Endpoints
-
-### Add Transaction
-
