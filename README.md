@@ -19,10 +19,6 @@ Track Income • Manage Expenses • Monitor Balance
 <img src="https://img.shields.io/badge/Frontend-HTML%20CSS%20JS-green?style=for-the-badge">
 <img src="https://img.shields.io/badge/Deployment-Vercel-black?style=for-the-badge">
 
-</p>
-
-<p align="center">
-
 <img src="https://img.shields.io/badge/Release-v1.0-purple?style=flat-square">
 <img src="https://img.shields.io/badge/License-MIT-brightgreen?style=flat-square">
 
